@@ -14,12 +14,4 @@ public class StreamingServiceApplication {
 		SpringApplication.run(StreamingServiceApplication.class, args);
 	}
 
-@Bean
-public CommandLineRunner testKinopoiskClient(StreamingClient streamingClient) {
-	return args -> {
-		var response = streamingClient.getFilmDetails(301);
-		System.out.println("Id: " + response.getStreamingId());
-		System.out.println("Description: " + response.getDescription());
-	};
-}
 }

@@ -17,8 +17,8 @@ public class FilmService {
         this.filmRepository = filmRepository;
     }
 
-    public void fetchAndSaveFilms(Integer page, Integer ratingFrom, Integer yearFrom) {
-        var searchResponce = streamingClient.searchFilms(page, ratingFrom, yearFrom);
+    public void fetchAndSaveFilms(Integer page, Integer ratingFrom, Integer yearFrom, Integer ratingTo, Integer yearTo, String order, String type, String keyword) {
+        var searchResponce = streamingClient.searchFilms(page, ratingFrom, yearFrom, ratingTo, yearTo, order, type, keyword);
 
         for (StreamingFilmItem item : searchResponce.getItems()) {
             boolean exists = filmRepository.existsByFilmId(item.getStreamingId());

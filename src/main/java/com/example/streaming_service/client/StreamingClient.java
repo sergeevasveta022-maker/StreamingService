@@ -25,7 +25,7 @@ public class StreamingClient {
         this.restTemplate = restTemplate;
     }
 
-    public StreamingSearchResponse searchFilms(Integer page, Integer ratingFrom, Integer yearFrom) {
+    public StreamingSearchResponse searchFilms(Integer page, Integer ratingFrom, Integer yearFrom, Integer ratingTo, Integer yearTo, String order, String type, String keyword) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-API-KEY", apiToken);
         headers.set("Content-Type", "application/json");
@@ -41,6 +41,21 @@ public class StreamingClient {
         }
         if (yearFrom != null) {
             builder.queryParam("yearFrom", yearFrom);
+        }
+        if (ratingTo != null) {
+            builder.queryParam("ratingTo", ratingTo);
+        }
+        if (yearTo != null) {
+            builder.queryParam("yearTo", yearTo);
+        }
+        if (order != null) {
+            builder.queryParam("order", order);
+        }
+        if (type != null) {
+            builder.queryParam("type", type);
+        }
+        if (keyword != null) {
+            builder.queryParam("keyword", keyword);
         }
 
         String url = builder.toUriString();

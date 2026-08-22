@@ -23,9 +23,14 @@ public class FilmController {
     public String fetchFilms(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer ratingFrom,
-            @RequestParam(required = false) Integer yearFrom
+            @RequestParam(required = false) Integer yearFrom,
+            @RequestParam(required = false) Integer ratingTo,
+            @RequestParam(required = false) Integer yearTo,
+            @RequestParam(required = false) String order,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String keyword
     ) {
-        filmService.fetchAndSaveFilms(page, ratingFrom, yearFrom);
+        filmService.fetchAndSaveFilms(page, ratingFrom, yearFrom, ratingTo, yearTo, order,type,keyword);
         return "Films saved";
     }
 
