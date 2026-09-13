@@ -1,38 +1,55 @@
 package com.example.streaming_service.controller;
 
-import com.example.streaming_service.entity.Film;
+import com.example.streaming_service.dto.response.ReportMapper;
+import com.example.streaming_service.dto.response.ReportResponseDto;
+import com.example.streaming_service.entity.Report;
 import com.example.streaming_service.report.ReportService;
-import com.example.streaming_service.repository.FilmRepository;
-import com.example.streaming_service.service.EmailService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.mail.MessagingException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.constraints.Email;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
+@Validated
 @RestController
-@RequestMapping("/api/v2/films")
+@RequestMapping("/api/v2/reports")
 public class ReportController {
 
-    private final FilmRepository filmRepository;
     private final ReportService reportService;
-    private final EmailService emailService;
+    private final ReportMapper reportMapper;
 
-    public ReportController(FilmRepository filmRepository, ReportService reportService, EmailService emailService) {
-        this.filmRepository = filmRepository;
+    public ReportController(ReportService reportService, ReportMapper reportMapper) {
         this.reportService = reportService;
-        this.emailService = emailService;
+        this.reportMapper = reportMapper;
     }
 
     @PostMapping("/report")
-    public String sensReport(@RequestParam String email) throws MessagingException, JsonProcessingException {
-        var films = filmRepository.findAll();
-        String cvs = reportService.generateCsv(films);
-        String xml = reportService.generateXml(films);
-        emailService.sendReport(email, cvs, xml);
+    public String sendReport(@RequestParam @Email String email) throws MessagingException, IOException {
+        reportService.sendReport(email);
         return "Report sent";
+    }
+
+    @PostMapping
+    public ResponseEntity<ReportResponseDto> createReport(@RequestParam @Email String email) {
+        Report report = reportService.createReport(email);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(reportMapper.toDto(report));
+    }
+
+    @GetMapping("/{reportId}")
+    public ReportResponseDto getReport(@PathVariable UUID reportId) {
+        Report report = reportService.getReportByReportId(reportId);
+        return reportMapper.toDto(report);
+    }
+
+    @GetMapping
+    public List<ReportResponseDto> getAllReports() {
+        return reportService.getAllReports().stream()
+                .map(reportMapper::toDto)
+                .toList();
     }
 }
