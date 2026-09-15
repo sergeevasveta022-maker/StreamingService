@@ -1,5 +1,7 @@
 package com.example.streaming_service.controller;
 
+import com.example.streaming_service.client.KinopoiskClient;
+import com.example.streaming_service.dto.*;
 import com.example.streaming_service.dto.response.FilmResponseDto;
 import com.example.streaming_service.service.FilmService;
 import jakarta.validation.constraints.DecimalMax;
@@ -17,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class FilmController {
 
     private final FilmService filmService;
+    private final KinopoiskClient kinopoiskClient;
 
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, KinopoiskClient kinopoiskClient) {
         this.filmService = filmService;
+        this.kinopoiskClient = kinopoiskClient;
     }
 
     @PostMapping
@@ -47,5 +51,35 @@ public class FilmController {
             Pageable pageable
     ) {
         return filmService.searchFilms(filmName, yearFrom, yearTo, ratingFrom, ratingTo, pageable);
+    }
+
+    @GetMapping("/{filmId}/similars")
+    public StreamingSimilarFilmsResponse getSimilarFilms(@PathVariable Integer filmId) {
+        return kinopoiskClient.getSimilarFilms(filmId).join();
+    }
+
+    @GetMapping("/{filmId}/staff")
+    public StreamingStaffItem[] getStaff(@PathVariable Integer filmId) {
+        return kinopoiskClient.getStaff(filmId).join();
+    }
+
+    @GetMapping("/{filmId}/reviews")
+    public StreamingReviewsResponse getReview(@PathVariable Integer filmId) {
+        return kinopoiskClient.getReview(filmId).join();
+    }
+
+    @GetMapping("/{filmId}/seasons")
+    public StreamingSeasonsResponse getSeasons(@PathVariable Integer filmId) {
+        return kinopoiskClient.getSeasons(filmId).join();
+    }
+
+    @GetMapping("/{filmId}/images")
+    public StreamingImagesResponse getImages(@PathVariable Integer filmId) {
+        return kinopoiskClient.getImages(filmId).join();
+    }
+
+    @GetMapping("/premieres")
+    public StreamingPremieresResponse getPremieres(@RequestParam Integer year, @RequestParam String month) {
+        return kinopoiskClient.getPremieres(year, month).join();
     }
 }
